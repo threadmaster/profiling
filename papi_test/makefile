@@ -42,7 +42,6 @@ pristine :
 	touch *.cc *.c *.f 
 	echo ${SHELL}
 	`if [ -e "cdriver" ]  ; then rm cdriver; fi`
-	`if [ -e "fdriver" ]  ; then rm fdriver; fi`
 
 ctags :
 	ctags *.cc *.c *.f
