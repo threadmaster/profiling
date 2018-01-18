@@ -53,6 +53,8 @@ int main() {
      wall = walltime_();
      cpu  = cputime_();
 
+     check = PAPI_library_init( PAPI_VER_CURRENT );
+
      // Make a call to PAPI_flops to initialize the variables
      check = PAPI_flops( &rtime, &ptime, &flpops, &mflops);     
 
@@ -75,7 +77,7 @@ int main() {
      // each operation is a multipy and add, so to compute the flops in a matrix
      // multiply you need to multiply by two.  Divide by 1000000 to get megaflops.
      
-     printf(" Estimated megaflops = %f\n", (2 *(double) (MAXSIZE*MAXSIZE*MAXSIZE) / cpu ) / 1000000.0);
+     printf(" Estimated megaflops = %f\n", (2 * (double) (MAXSIZE*MAXSIZE*MAXSIZE) / cpu ) / 1000000.0);
 
      // Now print out the megaflops determined by PAPI using hardware counters
      //
