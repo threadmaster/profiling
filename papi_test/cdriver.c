@@ -60,7 +60,7 @@ int main() {
 
      mmult(idim, A, B, C);
 
-     // The second call to PAPI_flops to recover the value since the last call
+     // Make a second call to PAPI_flops to recover the value since the last call
      check = PAPI_flops( &rtime, &ptime, &flpops, &mflops);     
 
 
