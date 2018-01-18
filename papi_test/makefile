@@ -11,7 +11,7 @@
 F77 = gfortran     
 CC = gcc 
 FFLAGS = -cpp
-CFLAGS =  
+CFLAGS = -march=nocona -mtune=core2 
 PROF =  
 
 LIBS =  liblbstime.a -lpapi
