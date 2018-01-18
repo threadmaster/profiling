@@ -53,9 +53,7 @@ int main() {
      wall = walltime_();
      cpu  = cputime_();
 
-     check = PAPI_library_init( PAPI_VER_CURRENT );
-
-     // Make a call to PAPI_flops to initialize the variables
+     // Make a call to high-level PAPI_flops function to initialize the variables
      check = PAPI_flops( &rtime, &ptime, &flpops, &mflops);     
 
      mmult(idim, A, B, C);
