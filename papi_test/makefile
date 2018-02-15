@@ -9,14 +9,14 @@
 # Use gfortran to avoid g77/gcc incompatibilities on Fedora
 # g77 works fine on systems where gcc/g77 were linked against the same library
 CC = gcc 
-CFLAGS =  
+CFLAGS = -O3  
 PROF =  
 
 LIBS =  liblbstime.a -lpapi
 
 OBJS = cputime.o walltime.o  
 
-all: lib cdriver
+all: lib cdriver llcdriver
 
 cputime.o : cputime.cc   
 	$(CC) $(CFLAGS) -c cputime.cc  
@@ -30,6 +30,12 @@ cdriver.o : cdriver.c
 # Don't forget the -lstdc++
 cdriver : cdriver.o  $(OBJS) 
 	$(CC) $(CFLAGS) -o cdriver cdriver.o  $(LIBS) -lstdc++   
+
+llcdriver.o : llcdriver.c   
+	$(CC) $(CFLAGS) -c llcdriver.c   
+
+llcdriver : llcdriver.o  $(OBJS) 
+	$(CC) $(CFLAGS) -o llcdriver llcdriver.o  $(LIBS) -lstdc++   
 
 # Default Targets for Cleaning up the Environment
 clean :
