@@ -18,11 +18,18 @@ program llfdriver
     real (kind=8) :: wall, cpu;
 
     ! PAPI Variables
+    ! c_int is a an normal fortran integet (kind=4)
+    ! long long in fortran is a (kind=8) integer
     real (kind=4) :: rtime, ptime, mflops
     integer (kind=8) ::  flpops
-    integer :: check, eventSet
+    integer (kind=4) :: check, eventSet
     integer (kind=8), dimension(NUM_EVENTS) :: sp_ops
 
+    ! Define external functions in lbstiming library
+    real (kind=8) :: cputime, walltime
+    external cputime, walltime
+
+ 
     mdim = MAXSIZE
 
     do i=1,mdim
@@ -37,10 +44,12 @@ program llfdriver
       enddo
     enddo
 
+     ! Initilialize the check variable
+     check = PAPI_VER_CURRENT  
 
      ! Initialize the PAPI library
      call PAPIF_library_init(check);
-     if ((check .ne. PAPI_VER_CURRENT) .and. (retval .gt. 0)) then 
+     if ((check .ne. PAPI_VER_CURRENT) .and. (check .gt. 0)) then 
          print *, "PAPI library version mismatch!"
          call exit() 
      endif
@@ -121,7 +130,7 @@ program llfdriver
      print *, " Estimated megaflops = ", &
           (2 * dble(MAXSIZE*MAXSIZE*MAXSIZE) / cpu ) / 1000000.0
 
-     print *, "SP_OPS Count from PAPI = %15lld\n", sp_ops(1)
+     print *, "SP_OPS Count from PAPI = ", sp_ops(1)
 
      ! Compute and print megaflopw based on PAPI counters
      mflops = (sp_ops(1)/cpu)/1000000.0
