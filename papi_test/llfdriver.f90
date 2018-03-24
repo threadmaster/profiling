@@ -54,8 +54,6 @@ program llfdriver
          call exit() 
      endif
 
-     print *, "Check = ", check, PAPI_VER_CURRENT
-
      if (check .lt. 0) then 
          print *, "PAPI initialization error."
          call exit()
