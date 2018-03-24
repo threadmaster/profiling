@@ -6,7 +6,7 @@
 ! Spring 2018 
 
 
- program llfdriver
+program llfdriver
  
 #include "f90papi.h"
 
@@ -40,10 +40,12 @@
 
      ! Initialize the PAPI library
      call PAPIF_library_init(check);
-     if (check .ne. PAPI_VER_CURRENT .and. retval .gt. 0) then 
+     if ((check .ne. PAPI_VER_CURRENT) .and. (retval .gt. 0)) then 
          print *, "PAPI library version mismatch!"
          call exit() 
      endif
+
+     print *, "Check = ", check, PAPI_VER_CURRENT
 
      if (check .lt. 0) then 
          print *, "PAPI initialization error."
