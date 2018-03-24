@@ -1,14 +1,15 @@
-// Fortran Driver Program to demonstrate low level PAPI calls 
-//
-// Andrew J. Pounds, Ph.D.
-// Departments of Chemistry and Computer Science
-// Mercer University
-// Spring 2018 
+! Fortran Driver Program to demonstrate low level PAPI calls 
+!
+! Andrew J. Pounds, Ph.D.
+! Departments of Chemistry and Computer Science
+! Mercer University
+! Spring 2018 
 
-#include "fpapi.h"
 
  program llfdriver
  
+#include "f90papi.h"
+
     integer :: i, j, k, mdim 
     integer, parameter :: MAXSIZE = 1000
     integer, parameter :: NUM_EVENTS = 2 
@@ -17,10 +18,10 @@
     real (kind=8) :: wall, cpu;
 
     ! PAPI Variables
-    C_FLOAT :: rtime, ptime, mflops
-    C_LONG_LONG ::  flpops
-    C_INT :: check, eventSet
-    C_LONG_LONG, dimension(NUM_EVENTS) :: sp_ops
+    real (kind=4) :: rtime, ptime, mflops
+    integer (kind=8) ::  flpops
+    integer :: check, eventSet
+    integer (kind=8), dimension(NUM_EVENTS) :: sp_ops
 
     mdim = MAXSIZE
 
@@ -38,44 +39,44 @@
 
 
      ! Initialize the PAPI library
-     PAPIF_library_init(check);
+     call PAPIF_library_init(check);
      if (check .ne. PAPI_VER_CURRENT .and. retval .gt. 0) then 
          print *, "PAPI library version mismatch!"
-         exit() 
+         call exit() 
      endif
 
      if (check .lt. 0) then 
          print *, "PAPI initialization error."
-         exit()
+         call exit()
      endif
 
-     PAPIF_is_initialized(check);
-     if (check .ne.  PAPI_LOW_LEVEL_INITED) {
+     call PAPIF_is_initialized(check);
+     if (check .ne.  PAPI_LOW_LEVEL_INITED )  then
          print *, "PAPI low level initialization failed."
-         exit()
-     }
-    
+         call exit()
+     endif 
+  
      ! Create a PAPI Event Set 
      eventSet = PAPI_NULL; 
 
-     PAPIF_create_eventset(eventSet,check)
+     call PAPIF_create_eventset(eventSet,check)
      if (check .ne. PAPI_OK ) then 
          print *, "Could not create PAPI event set."
-         exit()
+         call exit()
      endif 
 
      ! Add the particular events to be counted to each event set
-     PAPIF_add_event(eventSet, PAPI_SP_OPS, check)
+     call PAPIF_add_event(eventSet, PAPI_SP_OPS, check)
      if (check .ne. PAPI_OK ) then 
          print *, "Could not create PAPI_SP_OPS event."
-         exit()
+         call exit()
      endif 
 
      ! Start the counters in each event set 
-     PAPIF_start(eventSet,check)
+     call PAPIF_start(eventSet,check)
      if ( check .ne. PAPI_OK ) then 
-         printf("Could not start PAPI_SP_OPS counter.\n");
-         exit()
+         print *, "Could not start PAPI_SP_OPS counter.";
+         call exit()
      endif 
 
      ! Note: call lbstime walltime_ and cputime_ 
@@ -84,22 +85,22 @@
      cpu  = cputime();
 
      ! Read set and set array back to zero 
-     PAPIF_accum(eventSet, sp_ops, check ) 
+     call PAPIF_accum(eventSet, sp_ops, check ) 
      if ( check .ne. PAPI_OK ) then 
-         printf("Could not read first event set.\n");
-         exit();
+         print *, "Could not read first event set.";
+         call exit()
      endif 
 
-     mmult(idim, A, B, C);
+     call mmult(mdim, A, B, C);
 
-     PAPIF_read(eventSet, sp_ops, check)
+     call PAPIF_read(eventSet, sp_ops, check)
      if ( check .ne. PAPI_OK ) then  
-         printf("Could not read first event set.\n");
-         exit()
+         print *, "Could not read first event set.";
+         call exit()
      endif   
 
      ! Make a second call to PAPI_flops to recover the value since the last call
-     PAPIF_flips( rtime, ptime, flpops, mflops, check);     
+     call PAPIF_flips( rtime, ptime, flpops, mflops, check);     
 
 
      wall = walltime() - wall;
@@ -116,7 +117,7 @@
      ! multiply you need to multiply by two.  Divide by 1000000 to get megaflops.
      
      print *, " Estimated megaflops = ", &
-          (2 * (double) (MAXSIZE*MAXSIZE*MAXSIZE) / cpu ) / 1000000.0
+          (2 * dble(MAXSIZE*MAXSIZE*MAXSIZE) / cpu ) / 1000000.0
 
      print *, "SP_OPS Count from PAPI = %15lld\n", sp_ops(1)
 
